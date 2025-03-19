@@ -100,8 +100,8 @@ export default function Register() {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Background Elements */}
-      <div className="fixed inset-0 bg-gradient-to-br from-cyber-darker to-black z-0">
-      <div className="absolute inset-0 grid-pattern opacity-10 z-0">
+      <div className="fixed inset-0 bg-gradient-to-br from-cyber-darker to-black z-0"></div>
+      <div className="absolute inset-0 grid-pattern opacity-10 z-0"></div>
 
       {/* Animated Circles */}
       <motion.div
@@ -299,7 +299,5 @@ export default function Register() {
         </Link>
       </div>
     </div>
-    </div>
-  </div>
   )
 }
