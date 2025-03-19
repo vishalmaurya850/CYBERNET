@@ -1,0 +1,835 @@
+{
+    "info": {
+      "name": "CYBERNET API",
+      "description": "API collection for CYBERNET Network Security Monitoring",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Authentication",
+        "description": "Endpoints for user authentication",
+        "item": [
+          {
+            "name": "Login",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"your_password\"\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/auth/login/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "auth",
+                  "login",
+                  ""
+                ]
+              },
+              "description": "Authenticate user and get token"
+            },
+            "response": []
+          },
+          {
+            "name": "Register",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"email\": \"newuser@example.com\",\n    \"password\": \"secure_password\",\n    \"username\": \"newuser\"\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/auth/register/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "auth",
+                  "register",
+                  ""
+                ]
+              },
+              "description": "Register a new user"
+            },
+            "response": []
+          },
+          {
+            "name": "Logout",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/auth/logout/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "auth",
+                  "logout",
+                  ""
+                ]
+              },
+              "description": "Logout and invalidate token"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Status",
+        "description": "Network status endpoints",
+        "item": [
+          {
+            "name": "Get Network Status",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/status/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "status",
+                  ""
+                ]
+              },
+              "description": "Get current network status information"
+            },
+            "response": []
+          },
+          {
+            "name": "Update Network Status",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"network_status\": \"Safe\",\n    \"recent_flows_count\": 150,\n    \"recent_alerts_count\": 0\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/status/update/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "status",
+                  "update",
+                  ""
+                ]
+              },
+              "description": "Update network status information"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Flows",
+        "description": "Network flow endpoints",
+        "item": [
+          {
+            "name": "Get All Flows",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/flows/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "flows",
+                  ""
+                ]
+              },
+              "description": "Get all network flows"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Flow by ID",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/flows/{{flow_id}}/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "flows",
+                  "{{flow_id}}",
+                  ""
+                ]
+              },
+              "description": "Get a specific network flow by ID"
+            },
+            "response": []
+          },
+          {
+            "name": "Create Flow",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"start_datetime\": \"2023-07-15T14:30:00Z\",\n    \"stop_datetime\": \"2023-07-15T14:35:00Z\",\n    \"duration\": 300,\n    \"source_port\": 443,\n    \"destination_port\": 8080,\n    \"total_source_bytes\": 15240,\n    \"total_destination_bytes\": 8560,\n    \"total_source_packets\": 120,\n    \"total_destination_packets\": 85\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/flows/create/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "flows",
+                  "create",
+                  ""
+                ]
+              },
+              "description": "Create a new network flow"
+            },
+            "response": []
+          },
+          {
+            "name": "Update Flow",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"duration\": 310,\n    \"total_source_bytes\": 16240,\n    \"total_destination_bytes\": 9560,\n    \"total_source_packets\": 130,\n    \"total_destination_packets\": 95\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/flows/{{flow_id}}/update/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "flows",
+                  "{{flow_id}}",
+                  "update",
+                  ""
+                ]
+              },
+              "description": "Update an existing network flow"
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Flow",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/flows/{{flow_id}}/delete/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "flows",
+                  "{{flow_id}}",
+                  "delete",
+                  ""
+                ]
+              },
+              "description": "Delete a network flow"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Recent Flows",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/flows/recent/?limit=10",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "flows",
+                  "recent",
+                  ""
+                ],
+                "query": [
+                  {
+                    "key": "limit",
+                    "value": "10"
+                  }
+                ]
+              },
+              "description": "Get most recent network flows with optional limit"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Alerts",
+        "description": "Security alert endpoints",
+        "item": [
+          {
+            "name": "Get All Alerts",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  ""
+                ]
+              },
+              "description": "Get all security alerts"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Alert by ID",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/{{alert_id}}/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  "{{alert_id}}",
+                  ""
+                ]
+              },
+              "description": "Get a specific alert by ID"
+            },
+            "response": []
+          },
+          {
+            "name": "Create Alert",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"attack_type\": \"Port Scanning\",\n    \"timestamp\": \"2023-07-15T15:30:00Z\",\n    \"flow\": \"60f5e4d3c2b1a09876543210\",\n    \"severity\": \"medium\"\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/create/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  "create",
+                  ""
+                ]
+              },
+              "description": "Create a new security alert"
+            },
+            "response": []
+          },
+          {
+            "name": "Update Alert",
+            "request": {
+              "method": "PUT",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"attack_type\": \"Advanced Port Scanning\",\n    \"severity\": \"high\"\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/{{alert_id}}/update/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  "{{alert_id}}",
+                  "update",
+                  ""
+                ]
+              },
+              "description": "Update an existing security alert"
+            },
+            "response": []
+          },
+          {
+            "name": "Delete Alert",
+            "request": {
+              "method": "DELETE",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/{{alert_id}}/delete/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  "{{alert_id}}",
+                  "delete",
+                  ""
+                ]
+              },
+              "description": "Delete a security alert"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Recent Alerts",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/recent/?limit=5",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  "recent",
+                  ""
+                ],
+                "query": [
+                  {
+                    "key": "limit",
+                    "value": "5"
+                  }
+                ]
+              },
+              "description": "Get most recent security alerts with optional limit"
+            },
+            "response": []
+          },
+          {
+            "name": "Get Alerts by Severity",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/alerts/severity/high/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "alerts",
+                  "severity",
+                  "high",
+                  ""
+                ]
+              },
+              "description": "Get alerts filtered by severity level (low, medium, high, critical)"
+            },
+            "response": []
+          }
+        ]
+      },
+      {
+        "name": "Config",
+        "description": "System configuration endpoints",
+        "item": [
+          {
+            "name": "Get System Config",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/config/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "config",
+                  ""
+                ]
+              },
+              "description": "Get system configuration settings"
+            },
+            "response": []
+          },
+          {
+            "name": "Update System Config",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n    \"sample_rate\": 10,\n    \"protocol_filter\": \"all\",\n    \"active_monitoring\": true,\n    \"alert_threshold\": \"medium\"\n}"
+              },
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/config/update/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "config",
+                  "update",
+                  ""
+                ]
+              },
+              "description": "Update system configuration settings"
+            },
+            "response": []
+          },
+          {
+            "name": "Get API Key",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/config/api-key/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "config",
+                  "api-key",
+                  ""
+                ]
+              },
+              "description": "Get current API key"
+            },
+            "response": []
+          },
+          {
+            "name": "Reset API Key",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Token {{token}}"
+                }
+              ],
+              "url": {
+                "raw": "http://127.0.0.1:8000/api/config/api-key/reset/",
+                "protocol": "http",
+                "host": [
+                  "127",
+                  "0",
+                  "0",
+                  "1"
+                ],
+                "port": "8000",
+                "path": [
+                  "api",
+                  "config",
+                  "api-key",
+                  "reset",
+                  ""
+                ]
+              },
+              "description": "Generate a new API key"
+            },
+            "response": []
+          }
+        ]
+      }
+    ],
+    "event": [
+      {
+        "listen": "prerequest",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            ""
+          ]
+        }
+      },
+      {
+        "listen": "test",
+        "script": {
+          "type": "text/javascript",
+          "exec": [
+            "// Auto-extract token from login response",
+            "if (pm.response.code === 200 && pm.info.requestName === \"Login\") {",
+            "    var jsonData = pm.response.json();",
+            "    if (jsonData.token) {",
+            "        pm.environment.set(\"token\", jsonData.token);",
+            "        console.log(\"Token saved to environment\");",
+            "    }",
+            "}"
+          ]
+        }
+      }
+    ],
+    "variable": [
+      {
+        "key": "token",
+        "value": "your_auth_token_here",
+        "type": "string"
+      },
+      {
+        "key": "flow_id",
+        "value": "flow_id_here",
+        "type": "string"
+      },
+      {
+        "key": "alert_id",
+        "value": "alert_id_here",
+        "type": "string"
+      }
+    ]
+  }
