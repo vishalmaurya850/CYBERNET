@@ -14,7 +14,13 @@ const ConfigPanel = ({ apiKey }: ConfigPanelProps) => {
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState("api")
   const [loading, setLoading] = useState(false)
-  const [, setConfigData] = useState<any>(null)
+  interface ConfigData {
+    // Define the structure of your configuration data here
+    status: string;
+    [key: string]: string | number | boolean | null | undefined; // Adjust based on your data structure
+  }
+
+  const [, setConfigData] = useState<ConfigData | null>(null)
   const apiKeyRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

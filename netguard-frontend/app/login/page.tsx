@@ -28,16 +28,16 @@ export default function Login() {
   const router = useRouter()
 
   // Development mode login bypass
-  const handleDevLogin = () => {
-    if (process.env.NODE_ENV === "development") {
-      // Store a mock token
-      const mockToken = "dev-mock-token-123"
-      localStorage.setItem("token", mockToken)
-      console.log("Development mode: Mock token saved to localStorage:", mockToken)
-      toast.success("Logged in with development bypass!")
-      router.push("/dashboard")
-    }
-  }
+  // const handleDevLogin = () => {
+  //   if (process.env.NODE_ENV === "development") {
+  //     // Store a mock token
+  //     const mockToken = "dev-mock-token-123"
+  //     localStorage.setItem("token", mockToken)
+  //     console.log("Development mode: Mock token saved to localStorage:", mockToken)
+  //     toast.success("Logged in with development bypass!")
+  //     router.push("/dashboard")
+  //   }
+  // }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

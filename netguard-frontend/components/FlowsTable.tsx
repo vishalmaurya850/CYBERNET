@@ -7,16 +7,16 @@ import FlowDetailsModalProps from "./FlowDetailsModal"
 import type { NetworkFlow } from "../lib/api"
 
 // Define the Flow interface
-interface Flow extends NetworkFlow {
-  // Add any additional properties or transformations if needed
-}
+// interface Flow extends NetworkFlow {
+//   // Add any additional properties or transformations if needed
+// }
 
 interface FlowsTableProps {
   flows: NetworkFlow[]
 }
 
 const FlowsTable = ({ flows }: FlowsTableProps) => {
-  const mapNetworkFlowToFlow = (networkFlow: NetworkFlow): Flow => {
+  const mapNetworkFlowToFlow = (networkFlow: NetworkFlow) => {
     return {
       ...networkFlow,
       // Add any necessary transformations here to match the Flow interface
