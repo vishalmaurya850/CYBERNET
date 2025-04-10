@@ -1,23 +1,10 @@
 "use client"
 import { ArrowDownLeft, ArrowUpRight, Clock, Database, Server } from "lucide-react"
 import Modal from "./Modal"
-
-interface Flow {
-  _id: string
-  start_datetime: string
-  stop_datetime: string
-  duration: number
-  source_port: number
-  destination_port: number
-  total_source_bytes: number
-  total_destination_bytes: number
-  total_source_packets: number
-  total_destination_packets: number
-  [key: string]: unknown
-}
+import type { NetworkFlow } from "../lib/api"
 
 interface FlowDetailsModalProps {
-  flow: Flow | null
+  flow: NetworkFlow | null
   isOpen: boolean
   onClose: () => void
 }
@@ -65,26 +52,40 @@ const FlowDetailsModal = ({ flow, isOpen, onClose }: FlowDetailsModalProps) => {
         </div>
 
         <div className="bg-cyber-darker/40 p-3 rounded-lg">
+          <h4 className="text-sm text-cyber-gray/70 mb-1">Application</h4>
+          <div className="text-xl font-medium text-cyber-cyan">{flow.app_name || "Unknown"}</div>
+        </div>
+
+        <div className="bg-cyber-darker/40 p-3 rounded-lg">
           <h4 className="text-sm text-cyber-gray/70 mb-1">Duration</h4>
           <div className="text-xl font-medium text-cyber-cyan">{flow.duration.toFixed(2)} seconds</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-cyber-darker/40 p-3 rounded-lg">
-            <h4 className="text-sm text-cyber-gray/70 mb-1">Source Port</h4>
+            <h4 className="text-sm text-cyber-gray/70 mb-1">Source</h4>
             <div className="flex items-center">
               <Server className="h-4 w-4 mr-1 text-cyber-purple" />
-              <span className="text-cyber-purple">{flow.source_port}</span>
+              <span className="text-cyber-purple">
+                {flow.source}:{flow.source_port}
+              </span>
             </div>
           </div>
 
           <div className="bg-cyber-darker/40 p-3 rounded-lg">
-            <h4 className="text-sm text-cyber-gray/70 mb-1">Destination Port</h4>
+            <h4 className="text-sm text-cyber-gray/70 mb-1">Destination</h4>
             <div className="flex items-center">
               <Server className="h-4 w-4 mr-1 text-cyber-purple" />
-              <span className="text-cyber-purple">{flow.destination_port}</span>
+              <span className="text-cyber-purple">
+                {flow.destination}:{flow.destination_port}
+              </span>
             </div>
           </div>
+        </div>
+
+        <div className="bg-cyber-darker/40 p-3 rounded-lg">
+          <h4 className="text-sm text-cyber-gray/70 mb-1">Protocol</h4>
+          <div className="text-xl font-medium text-cyber-cyan">{flow.protocol_name}</div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -112,4 +113,3 @@ const FlowDetailsModal = ({ flow, isOpen, onClose }: FlowDetailsModalProps) => {
 }
 
 export default FlowDetailsModal
-

@@ -35,6 +35,41 @@ apiClient.interceptors.response.use(
   },
 )
 
+export interface NetworkFlow {
+  _id: string
+  app_name: string
+  total_source_bytes: number
+  total_destination_bytes: number
+  total_destination_packets: number
+  total_source_packets: number
+  direction: string
+  source: string
+  protocol_name: string
+  source_port: number
+  destination: string
+  destination_port: number
+  start_datetime: string
+  stop_datetime: string
+  duration: number
+  prediction: string
+}
+
+export interface Alert {
+  _id?: string
+  user: number
+  flow: string | NetworkFlow;
+  attack_type?: string
+  timestamp: string
+  severity?: "low" | "medium" | "high" | "critical"
+}
+
+export interface Status {
+  network_status: string
+  recent_flows_count: number
+  recent_alerts_count: number
+  last_updated: string
+}
+
 // API functions
 export const api = {
   // Status endpoints
@@ -47,51 +82,48 @@ export const api = {
 
   // Flows endpoints
   flows: {
-    getAll: async () => {
+    getAll: async (): Promise<NetworkFlow[]> => {
       const response = await apiClient.get("/flows/")
       return response.data
     },
-    getById: async (id: string) => {
+    getById: async (id: string): Promise<NetworkFlow> => {
       const response = await apiClient.get(`/flows/${id}/`)
       return response.data
     },
-    getRecent: async (limit = 10) => {
-      const response = await apiClient.get(`/flows/recent/?limit=${limit}`)
+    create: async (flowData: Partial<NetworkFlow>): Promise<NetworkFlow> => {
+      const response = await apiClient.post("/flows/", flowData)
       return response.data
     },
   },
 
   // Alerts endpoints
   alerts: {
-    getAll: async () => {
+    getAll: async (): Promise<Alert[]> => {
       const response = await apiClient.get("/alerts/")
       return response.data
     },
-    getById: async (id: string) => {
+    getById: async (id: string): Promise<Alert> => {
       const response = await apiClient.get(`/alerts/${id}/`)
-      return response.data
-    },
-    getBySeverity: async (severity: string) => {
-      const response = await apiClient.get(`/alerts/severity/${severity}/`)
-      return response.data
-    },
-    getRecent: async (limit = 5) => {
-      const response = await apiClient.get(`/alerts/recent/?limit=${limit}`)
       return response.data
     },
   },
 
   // Config endpoints
-  config: {
-    get: async () => {
-      const response = await apiClient.get("/config/")
+  auth: {
+    login: async (username: string, password: string) => {
+      const response = await apiClient.post("/auth/login/", { username, password })
+      return response.data
+    },
+    register: async (username: string, email: string, password: string) => {
+      const response = await apiClient.post("/auth/register/", { username, email, password })
       return response.data
     },
     getApiKey: async () => {
-      const response = await apiClient.get("/config/api-key/")
+      const response = await apiClient.get("/auth/api-key/")
       return response.data
     },
   },
 }
+
 
 export default api

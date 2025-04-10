@@ -5,74 +5,72 @@ import Navbar from "../../components/Navbar"
 import Loader from "../../components/Loader"
 import FlowsTable from "../../components/FlowsTable"
 import { motion } from "framer-motion"
-import { RefreshCw, ShieldAlert } from 'lucide-react'
+import { RefreshCw, ShieldAlert } from "lucide-react"
 import { useRouter } from "next/navigation"
-  // Update the flows page to use the centralized API utility
-import api from "../../lib/api"
+import api, { type NetworkFlow } from "../../lib/api"
 
-interface Flow {
-  _id: string
-  start_datetime: string
-  stop_datetime: string
-  duration: number
-  source_port: number
-  destination_port: number
-  total_source_bytes: number
-  total_destination_bytes: number
-  total_source_packets: number
-  total_destination_packets: number
-  [key: string]: unknown
-}
+// Define the Flow type based on your requirements
+type Flow = NetworkFlow & {
+  [key: string]: unknown; // Use 'unknown' instead of 'any' for stricter type checking
+};
 
 export default function Flows() {
-  const [flows, setFlows] = useState<Flow[]>([])
+  const [flows, setFlows] = useState<NetworkFlow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [initialLoad, setInitialLoad] = useState(true)
   const router = useRouter()
 
   // Replace the fetchFlows function with a useCallback version
-  const fetchFlows = useCallback(async (showLoading = false) => {
-    if (showLoading) {
-      setLoading(true);
-    }
-    
-    try {
-      // Check for token in localStorage
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        console.error('No token found in localStorage');
-        router.push('/login');
-        return;
-      }
-      
-      // Fetch flows data
-      console.log('Fetching flows data...');
-      const flowsData = await api.flows.getAll();
-      console.log('Flows data received:', flowsData);
-      
-      // Ensure we have valid flow objects with required properties
-      const validFlows = Array.isArray(flowsData) ? flowsData.filter(flow => 
-        flow && typeof flow === 'object' && flow._id
-      ) : [];
-      
-      console.log('Valid flows after filtering:', validFlows);
-      setFlows(validFlows);
-      setError(null);
-    } catch (err) {
-      console.error('Fetch Flows Error:', err);
-      
+  const fetchFlows = useCallback(
+    async (showLoading = false) => {
       if (showLoading) {
-        setError('Failed to fetch flows from the server. Please check your connection and try again.');
+        setLoading(true)
       }
-    } finally {
-      if (showLoading) {
-        setLoading(false);
-        setInitialLoad(false);
+
+      try {
+        // Check for token in localStorage
+        const token = localStorage.getItem("token")
+
+        if (!token) {
+          console.error("No token found in localStorage")
+          router.push("/login")
+          return
+        }
+
+        // Fetch flows data
+        console.log("Fetching flows data...")
+        const flowsData = await api.flows.getAll()
+        console.log("Flows data received:", flowsData)
+
+        // Ensure we have valid flow objects with required properties
+        const validFlows = Array.isArray(flowsData)
+          ? flowsData.filter((flow) => flow && typeof flow === "object" && flow._id)
+          : []
+
+        console.log("Valid flows after filtering:", validFlows)
+        // Transform NetworkFlow objects into Flow objects
+        const transformedFlows = validFlows.map((flow) => ({
+          ...flow,
+          // Add any required properties or transformations here
+        }))
+        setFlows(transformedFlows)
+        setError(null)
+      } catch (err) {
+        console.error("Fetch Flows Error:", err)
+
+        if (showLoading) {
+          setError("Failed to fetch flows from the server. Please check your connection and try again.")
+        }
+      } finally {
+        if (showLoading) {
+          setLoading(false)
+          setInitialLoad(false)
+        }
       }
-    }
-  }, [router]);
+    },
+    [router],
+  )
 
   // Update the useEffect to include fetchFlows in the dependency array
   useEffect(() => {
@@ -137,12 +135,12 @@ export default function Flows() {
                 onClick={() => fetchFlows(true)}
                 className="mt-3 bg-cyber-darker hover:bg-cyber-pink/20 text-cyber-pink py-2 px-4 rounded-lg transition-colors"
               >
-                Try Again
+              <FlowsTable flows={flows as Flow[]} />
               </button>
             </div>
           ) : (
             <motion.div variants={itemVariants}>
-              <FlowsTable flows={flows} />
+              <FlowsTable flows={flows as Flow[]} />
             </motion.div>
           )}
         </motion.div>

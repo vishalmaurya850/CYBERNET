@@ -9,38 +9,11 @@ import { Bell, Database, Info, ShieldAlert, Clock, ArrowUpRight } from "lucide-r
 import Link from "next/link"
 import NetworkStatsCard from "../../components/NetworkStatsCard"
 import { useRouter } from "next/navigation"
-import api from "../../lib/api"
-
-// Define proper types
-interface NetworkStatus {
-  network_status: string
-  recent_flows_count: number
-  recent_alerts_count: number
-  last_updated: string
-  [key: string]: unknown
-}
-
-interface Flow {
-  start_datetime: string
-  total_source_packets: number
-  [key: string]: unknown
-  duration?: number
-  source_port?: string
-  destination_port?: string
-  _id: string
-}
-
-interface Alert {
-  _id: string
-  attack_type: string
-  timestamp: string
-  flow: string
-  [key: string]: unknown
-}
+import api, { type NetworkFlow, type Alert, type Status } from "../../lib/api"
 
 export default function Dashboard() {
-  const [status, setStatus] = useState<NetworkStatus | null>(null)
-  const [flows, setFlows] = useState<Flow[]>([])
+  const [status, setStatus] = useState<Status | null>(null)
+  const [flows, setFlows] = useState<NetworkFlow[]>([])
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -154,15 +127,22 @@ export default function Dashboard() {
     },
   }
 
+  // Format bytes helper function
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
   return (
     <>
       <Navbar />
       <div className="pt-16">
-        {" "}
-        {/* Add padding top to account for fixed navbar */}
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="container py-8">
           <motion.div variants={itemVariants} className="mb-8 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold cyber-gradient font-orbitron mb-3">CYBERNET Dashboard</h1>
+            <h1 className="text-4xl md:text-5xl font-bold cyber-gradient font-orbitron mb-3">NetGuard Dashboard</h1>
             <p className="text-cyber-gray max-w-2xl mx-auto">
               Real-time network security monitoring and threat detection
             </p>
@@ -305,7 +285,7 @@ export default function Dashboard() {
                                 <div className="flex items-center space-x-3">
                                   <div className="flex items-center">
                                     <ArrowUpRight className="h-4 w-4 mr-1 text-cyber-cyan" />
-                                    <span className="text-cyber-cyan">{flow.total_source_packets || 0} pkts</span>
+                                    <span className="text-cyber-cyan">{formatBytes(flow.total_source_bytes)}</span>
                                   </div>
                                 </div>
                               </td>

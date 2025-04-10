@@ -15,23 +15,14 @@ import {
 import { motion } from "framer-motion"
 import { BarChart3, Download, RefreshCw } from "lucide-react"
 import { useState } from "react"
+import type { NetworkFlow } from "../lib/api"
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
-interface Flow {
-  start_datetime: string
-  total_source_packets: number
-  total_destination_packets?: number
-  total_source_bytes?: number
-  total_destination_bytes?: number
-  [key: string]: unknown
-}
-
 interface FlowChartProps {
-  flows: Flow[]
+  flows: NetworkFlow[]
 }
 
-// Improve data handling in FlowChart component
 const FlowChart = ({ flows }: FlowChartProps) => {
   const [chartType, setChartType] = useState<"packets" | "bytes">("packets")
 
@@ -205,6 +196,36 @@ const FlowChart = ({ flows }: FlowChartProps) => {
     },
   }
 
+  // Calculate average and peak values
+  const calculateStats = () => {
+    if (sortedFlows.length === 0) {
+      return { avg: 0, peak: 0 }
+    }
+
+    if (chartType === "packets") {
+      const sourcePackets = sortedFlows.map((f) => f.total_source_packets || 0)
+      const destPackets = sortedFlows.map((f) => f.total_destination_packets || 0)
+      const allPackets = [...sourcePackets, ...destPackets]
+
+      const avg = Math.round(allPackets.reduce((a, b) => a + b, 0) / allPackets.length)
+      const peak = Math.max(...allPackets)
+
+      return { avg, peak }
+    } else {
+      const sourceBytes = sortedFlows.map((f) => f.total_source_bytes || 0)
+      const destBytes = sortedFlows.map((f) => f.total_destination_bytes || 0)
+      const allBytes = [...sourceBytes, ...destBytes]
+
+      // Convert to KB/s
+      const avg = Math.round((allBytes.reduce((a, b) => a + b, 0) / allBytes.length / 1024) * 10) / 10
+      const peak = Math.round((Math.max(...allBytes) / 1024) * 10) / 10
+
+      return { avg, peak }
+    }
+  }
+
+  const stats = calculateStats()
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -258,12 +279,14 @@ const FlowChart = ({ flows }: FlowChartProps) => {
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="bg-cyber-darker/40 p-3 rounded-lg">
             <p className="text-xs text-cyber-gray/70">Average Traffic</p>
-            <p className="text-xl font-medium text-cyber-cyan">{chartType === "packets" ? "384 pps" : "45.7 KB/s"}</p>
+            <p className="text-xl font-medium text-cyber-cyan">
+              {chartType === "packets" ? `${stats.avg} pps` : `${stats.avg} KB/s`}
+            </p>
           </div>
           <div className="bg-cyber-darker/40 p-3 rounded-lg">
             <p className="text-xs text-cyber-gray/70">Peak Traffic</p>
             <p className="text-xl font-medium text-cyber-pink">
-              {chartType === "packets" ? "1,203 pps" : "134.2 KB/s"}
+              {chartType === "packets" ? `${stats.peak} pps` : `${stats.peak} KB/s`}
             </p>
           </div>
         </div>

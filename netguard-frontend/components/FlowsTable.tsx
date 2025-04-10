@@ -3,29 +3,26 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowDownLeft, ArrowUpRight, Clock, Database, Eye } from "lucide-react"
-import FlowDetailsModal from "./FlowDetailsModal"
+import FlowDetailsModalProps from "./FlowDetailsModal"
+import type { NetworkFlow } from "../lib/api"
 
-interface Flow {
-  _id: string
-  start_datetime: string
-  stop_datetime: string
-  duration: number
-  source_port: number
-  destination_port: number
-  total_source_bytes: number
-  total_destination_bytes: number
-  total_source_packets: number
-  total_destination_packets: number
-  [key: string]: unknown
+// Define the Flow interface
+interface Flow extends NetworkFlow {
+  // Add any additional properties or transformations if needed
 }
 
 interface FlowsTableProps {
-  flows: Flow[]
+  flows: NetworkFlow[]
 }
 
-// Improve data handling in FlowsTable component
 const FlowsTable = ({ flows }: FlowsTableProps) => {
-  const [selectedFlow, setSelectedFlow] = useState<Flow | null>(null)
+  const mapNetworkFlowToFlow = (networkFlow: NetworkFlow): Flow => {
+    return {
+      ...networkFlow,
+      // Add any necessary transformations here to match the Flow interface
+    }
+  }
+  const [selectedFlow, setSelectedFlow] = useState<NetworkFlow | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Add debugging for incoming data
@@ -44,7 +41,7 @@ const FlowsTable = ({ flows }: FlowsTableProps) => {
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
   }
 
-  const handleViewDetails = (flow: Flow) => {
+  const handleViewDetails = (flow: NetworkFlow) => {
     console.log("Viewing flow details:", flow)
     setSelectedFlow(flow)
     setIsModalOpen(true)
@@ -63,6 +60,7 @@ const FlowsTable = ({ flows }: FlowsTableProps) => {
               <tr className="border-b border-cyber-cyan/20">
                 <th className="text-left py-3 px-4 text-cyber-gray font-medium">Time</th>
                 <th className="text-left py-3 px-4 text-cyber-gray font-medium">Duration</th>
+                <th className="text-left py-3 px-4 text-cyber-gray font-medium">App</th>
                 <th className="text-left py-3 px-4 text-cyber-gray font-medium">Ports</th>
                 <th className="text-left py-3 px-4 text-cyber-gray font-medium">Data Transfer</th>
                 <th className="text-left py-3 px-4 text-cyber-gray font-medium">Actions</th>
@@ -85,6 +83,9 @@ const FlowsTable = ({ flows }: FlowsTableProps) => {
                   </td>
                   <td className="py-3 px-4">
                     <span className="text-cyber-gray">{flow.duration.toFixed(2)}s</span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className="text-cyber-gray">{flow.app_name || "Unknown"}</span>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center space-x-1">
@@ -122,12 +123,16 @@ const FlowsTable = ({ flows }: FlowsTableProps) => {
 
         {validFlows.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-cyber-gray">No network flows detected yet.</p>
+        flow={selectedFlow ? <pre>{JSON.stringify(mapNetworkFlowToFlow(selectedFlow), null, 2)}</pre> : null}
           </div>
         )}
       </div>
 
-      <FlowDetailsModal flow={selectedFlow} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <FlowDetailsModalProps
+        flow={selectedFlow ? mapNetworkFlowToFlow(selectedFlow) : null}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   )
 }

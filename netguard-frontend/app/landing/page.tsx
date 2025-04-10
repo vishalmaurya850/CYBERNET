@@ -405,7 +405,7 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="bg-cyber-darker py-12 border-t border-cyber-cyan/20 w-full">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          <div className="grid grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center mb-4">
                 <Shield className="h-8 w-8 text-cyber-cyan mr-2" />

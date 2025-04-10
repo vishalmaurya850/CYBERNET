@@ -1,140 +1,91 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useCallback } from "react"
-import AlertCard from "../../components/AlertCard"
-import Loader from "../../components/Loader"
-import Navbar from "../../components/Navbar"
-import { motion } from "framer-motion"
-import { AlertTriangle, Filter, RefreshCw, Search } from "lucide-react"
-import { useRouter } from "next/navigation"
-import api from "../../lib/api"
+import { useEffect, useState, useCallback } from "react";
+import AlertCard from "../../components/AlertCard";
+import Loader from "../../components/Loader";
+import Navbar from "../../components/Navbar";
+import { motion } from "framer-motion";
+import { AlertTriangle, Filter, RefreshCw, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import api from "../../lib/api";
 
-// Update the interface to match the actual API response
-interface Alert {
-  _id: string
-  attack_type: string
-  timestamp: string
-  flow: string
-  severity?: "low" | "medium" | "high" | "critical" // Make severity optional as it might not be in the API
-}
+// Updated interface to match the backend response
+import type { Alert, NetworkFlow } from "../../lib/api"; // Use the Alert type from the API
 
 export default function Alerts() {
-  const [alerts, setAlerts] = useState<Alert[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filter, setFilter] = useState("all")
-  const [error, setError] = useState<string | null>(null)
-  const [initialLoad, setInitialLoad] = useState(true)
-  const router = useRouter()
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [error, setError] = useState<string | null>(null);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const router = useRouter();
 
-  // Replace the fetchAlerts function with a useCallback version
   const fetchAlerts = useCallback(
     async (showLoading = false) => {
       if (showLoading) {
-        setLoading(true)
+        setLoading(true);
       }
 
       try {
-        // Check for token in localStorage
-        const token = localStorage.getItem("token")
-
+        const token = localStorage.getItem("token");
         if (!token) {
-          console.error("No token found in localStorage")
-          router.push("/login")
-          return
+          console.error("No token found in localStorage");
+          router.push("/login");
+          return;
         }
 
-        // Fetch alerts data
-        console.log("Fetching alerts data...")
-        const alertsData = await api.alerts.getAll()
-        console.log("Alerts data received:", alertsData)
+        console.log("Fetching alerts data...");
+        const alertsData = await api.alerts.getAll();
+        console.log("Alerts data received:", alertsData);
 
-        // Determine severity based on attack type if not provided by API
-        const alertsWithSeverity = alertsData.map((alert: Alert) => {
-          if (!alert.severity) {
-            // Assign severity based on attack type if not provided
-            const attackType = alert.attack_type.toLowerCase()
-            let severity: "low" | "medium" | "high" | "critical" = "medium"
-
-            if (attackType.includes("ddos") || attackType.includes("injection")) {
-              severity = "critical"
-            } else if (attackType.includes("brute force") || attackType.includes("unauthorized")) {
-              severity = "high"
-            } else if (attackType.includes("scanning") || attackType.includes("suspicious")) {
-              severity = "medium"
-            } else {
-              severity = "low"
-            }
-
-            return { ...alert, severity }
-          }
-          return alert
-        })
-
-        console.log("Processed alerts with severity:", alertsWithSeverity)
-        setAlerts(alertsWithSeverity)
-        setError(null)
+        // Ensure severity is present (backend already assigns it)
+        setAlerts(alertsData);
+        setError(null);
       } catch (err) {
-        console.error("Fetch Alerts Error:", err)
-
+        console.error("Fetch Alerts Error:", err);
         if (showLoading) {
-          setError("Failed to fetch alerts from the server. Please check your connection and try again.")
+          setError("Failed to fetch alerts from the server. Please check your connection and try again.");
         }
       } finally {
         if (showLoading) {
-          setLoading(false)
-          setInitialLoad(false)
+          setLoading(false);
+          setInitialLoad(false);
         }
       }
     },
     [router],
-  )
+  );
 
-  // Update the useEffect to include fetchAlerts in the dependency array
   useEffect(() => {
-    // Initial load with loading indicator
-    fetchAlerts(true)
-
-    // Set up interval for refreshing data without loading indicator
-    const interval = setInterval(() => {
-      fetchAlerts(false)
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [fetchAlerts])
+    fetchAlerts(true); // Initial load with loading indicator
+    const interval = setInterval(() => fetchAlerts(false), 5000); // Refresh every 5s
+    return () => clearInterval(interval);
+  }, [fetchAlerts]);
 
   const filteredAlerts = alerts.filter((alert) => {
-    const matchesSearch = alert.attack_type.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesFilter = filter === "all" || alert.severity === filter
-    return matchesSearch && matchesFilter
-  })
+    // Safely handle attack_type being undefined or null
+    const attackType = alert.attack_type || ""; // Fallback to empty string
+    const matchesSearch = attackType.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filter === "all" || alert.severity === filter;
+    return matchesSearch && matchesFilter;
+  });
 
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100 },
-    },
-  }
+    visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+  };
 
   return (
     <>
       <Navbar />
       <div className="pt-16">
-        {" "}
-        {/* Add padding top to account for fixed navbar */}
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="container py-8">
           <motion.div variants={itemVariants} className="mb-8 text-center">
             <h1 className="text-4xl md:text-5xl font-bold cyber-gradient font-orbitron mb-3">Security Alerts</h1>
@@ -193,8 +144,16 @@ export default function Alerts() {
             <Loader text="Loading alerts..." />
           ) : (
             <motion.div variants={itemVariants} className="space-y-6">
-              {filteredAlerts && filteredAlerts.length > 0 ? (
-                filteredAlerts.map((alert, index) => <AlertCard key={alert._id || index} alert={alert} />)
+              {filteredAlerts.length > 0 ? (
+                filteredAlerts.map((alert, index) => (
+                  <AlertCard
+                    key={index}
+                    alert={{
+                      ...alert,
+                      flow: alert.flow as unknown as NetworkFlow, // Cast flow to unknown first, then to NetworkFlow
+                    }}
+                  /> // Use index as key since _id is not present
+                ))
               ) : (
                 <div className="card border border-dashed border-cyber-gray/30 bg-transparent p-10 text-center">
                   <div className="mx-auto w-16 h-16 rounded-full bg-cyber-darker flex items-center justify-center mb-4">
@@ -205,14 +164,14 @@ export default function Alerts() {
                     {searchTerm || filter !== "all"
                       ? "No alerts match your current filters. Try adjusting your search criteria."
                       : error
-                        ? error
-                        : "Your network is secure. No security alerts have been detected."}
+                      ? error
+                      : "Your network is secure. No security alerts have been detected."}
                   </p>
                   {(searchTerm || filter !== "all") && (
                     <button
                       onClick={() => {
-                        setSearchTerm("")
-                        setFilter("all")
+                        setSearchTerm("");
+                        setFilter("all");
                       }}
                       className="mt-4 text-cyber-cyan hover:underline"
                     >
@@ -226,5 +185,5 @@ export default function Alerts() {
         </motion.div>
       </div>
     </>
-  )
+  );
 }
